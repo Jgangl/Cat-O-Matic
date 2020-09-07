@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/MealTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Meals"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/MealTitle"
         app:layout_constraintVertical_bias="0.060000002">
 
         <androidx.constraintlayout.widget.ConstraintLayout

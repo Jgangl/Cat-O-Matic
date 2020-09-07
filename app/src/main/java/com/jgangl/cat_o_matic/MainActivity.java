@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mealOneTime=(EditText)findViewById(R.id.in_time);
+        mealOneTime = findViewById(R.id.MealOne_Time_Input);
 
         mealOneTime.setInputType(InputType.TYPE_NULL);
         mealOneTime.setOnClickListener(new View.OnClickListener() {
