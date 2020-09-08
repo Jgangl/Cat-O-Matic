@@ -29,7 +29,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/MealOne"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
 
             <LinearLayout
@@ -52,6 +52,7 @@
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
+                        android:gravity="left"
                         android:text="Time:"
                         android:textSize="18sp" />
 
@@ -116,10 +117,16 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="?android:attr/listDivider" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/MealTwo"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
 
             <LinearLayout
@@ -206,10 +213,16 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="?android:attr/listDivider" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/MealThree"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
 
             <LinearLayout
@@ -296,10 +309,16 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="?android:attr/listDivider" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/MealFour"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
 
             <LinearLayout
@@ -386,10 +405,16 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="?android:attr/listDivider" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/MealFive"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
 
             <LinearLayout
@@ -488,6 +513,22 @@
         android:scaleY="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/foodLevel_ProgressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="175dp"
+        android:maxHeight="50dp"
+        android:minHeight="50dp"
+        android:progress="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+
+        />
 
     <Button
         android:id="@+id/ManualMeal_Button_Input"
