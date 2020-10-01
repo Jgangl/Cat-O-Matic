@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -14,9 +15,21 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TimePicker;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.io.UnsupportedEncodingException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends Activity{
 
@@ -153,6 +166,7 @@ public class MainActivity extends Activity{
 
     private void triggerManualFeed(){
         //Manual Feed Triggered
+        sendTestRequest();
     }
 
     private void showTimeDialog(final EditText editTextToSet){
@@ -174,4 +188,49 @@ public class MainActivity extends Activity{
                 }, mHour, mMinute, false);
         timePickerDialog.show();
     }
+
+    private void sendTestRequest(){
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="http://192.168.1.198/";
+
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        foodLevelProgBar.setProgress(75);
+                        Log.println(Log.DEBUG,"NONE","Worked!!");
+                        // Display the first 500 characters of the response string.
+                        //textView.setText("Response is: "+ response.substring(0,500));
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                foodLevelProgBar.setProgress(25);
+
+                Log.println(Log.DEBUG,"NONE",error.getMessage());
+                //.setText("That didn't work!");
+            }
+        }) {
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Param1","This Is Param1");
+                params.put("Param2","This Is Param2");
+                return params;
+        }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
 }
