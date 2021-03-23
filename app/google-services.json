@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "62455128332",
+    "firebase_url": "https://cat-o-matic.firebaseio.com",
+    "project_id": "cat-o-matic",
+    "storage_bucket": "cat-o-matic.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62455128332:android:471b77df0703857c222929",
+        "android_client_info": {
+          "package_name": "com.jgangl.cat_o_matic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "62455128332-1v7fag0s8i9kkbqmp9h2j5cadai0i179.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqpdLRZsAtdRPEeCnjnFVtc7RNmwAtIIg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "62455128332-1v7fag0s8i9kkbqmp9h2j5cadai0i179.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

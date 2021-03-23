@@ -15,6 +15,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -29,6 +32,8 @@ public class MainActivity extends Activity{
     int espReceivePort = 50000;
 
     int value = 0;
+
+    FirebaseDatabase database;
 
     String newTextString;
 
@@ -69,6 +74,8 @@ public class MainActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        database = FirebaseDatabase.getInstance();
 
         System.out.println(newtime);
 
@@ -186,13 +193,16 @@ public class MainActivity extends Activity{
         //Manual Feed Triggered
         //sendTestRequest();
 
-        //String data = "1:0|1800|10,2:1|0800|11,3:0|0400|08,4:0|2000|10,5:50,6:0";
-        //String data = "6:10";
-        String data = "4:1|1754|8";
+        //String data = "01|01|1200|10|1";
+        //String data = "02|099";
+        //String data = "03|1";
+        //String data = "04|1";
 
+        DatabaseReference myRef = database.getReference("Meals/Meal1/Amount");
+        myRef.setValue(5);
         textView.setText("");
 
-        SendData(data, espPort, espIP);
+        //SendData(data, espPort, espIP);
 
         //UDPSocket sock = new UDPSocket(espIP, espPort);
     }
