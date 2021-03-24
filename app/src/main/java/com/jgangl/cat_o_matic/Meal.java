@@ -92,4 +92,12 @@ public class Meal {
     public void setEnableSwitch(Switch enableSwitch) {
         this.enableSwitch = enableSwitch;
     }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
 }

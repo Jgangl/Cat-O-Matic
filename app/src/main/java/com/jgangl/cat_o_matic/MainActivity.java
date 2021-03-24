@@ -3,8 +3,12 @@ package com.jgangl.cat_o_matic;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -23,27 +27,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class MainActivity extends Activity{
-
-    //String espIP = "192.168.1.198";
-    //int espPort = 4210;
-    //int espReceivePort = 50000;
     FirebaseDatabase database;
 
-    String newTextString;
-
-    Button manualMealButton;
-    Switch enableAllMeals;
-
+    ArrayList<Meal> meals;
     Switch[] switches;
     EditText[] timeInputs;
     EditText[] amountInputs;
 
-
+    Button manualMealButton;
+    Switch enableAllMeals;
     ProgressBar foodLevelProgBar;
 
     TextView textView;
-
-    ArrayList<Meal> meals;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +55,13 @@ public class MainActivity extends Activity{
         manualMealButton = findViewById(R.id.ManualMeal_Button_Input);
         enableAllMeals = findViewById(R.id.AllMeals_Switch_Input);
 
+
+        manualMealButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                triggerManualFeed();
+            }
+        });
 
         switches = new Switch[5];
         for(int i = 0; i < switches.length; i++){
@@ -94,129 +96,43 @@ public class MainActivity extends Activity{
             });
         }
 
+        amountInputs = new EditText[5];
+        for(int i = 0; i < amountInputs.length; i++){
+            String amountInputName = "Meal"+ (i+1) + "_Amount_Input";
+            int resId = getResources().getIdentifier(amountInputName, "id", getPackageName());
+            amountInputs[i] = findViewById(resId);
 
-        //final EditText mealOneTime = findViewById(R.id.MealOne_Time_Input);
-        //final EditText mealTwoTime = findViewById(R.id.MealTwo_Time_Input);
-        //final EditText mealThreeTime = findViewById(R.id.MealThree_Time_Input);
-        //final EditText mealFourTime = findViewById(R.id.MealFour_Time_Input);
-        //final EditText mealFiveTime = findViewById(R.id.MealFive_Time_Input);
+            final int finalI = i;
 
-        manualMealButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                triggerManualFeed();
-            }
-        });
-
-        /*
-        mealOneTime.setInputType(InputType.TYPE_NULL);
-        mealOneTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimeDialog(mealOneTime);
-            }
-        });
-        mealOneTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-            if (hasFocus) {
-                showTimeDialog(mealOneTime);
-            }
-            }
-        });
-
-        mealTwoTime.setInputType(InputType.TYPE_NULL);
-        mealTwoTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimeDialog(mealTwoTime);
-            }
-        });
-        mealTwoTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    showTimeDialog(mealTwoTime);
+            amountInputs[i].setOnEditorActionListener(new EditText.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    boolean handled = false;
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        amountInputs[finalI].clearFocus();
+                    }
+                    return handled;
                 }
-            }
-        });
+            });
 
-        mealThreeTime.setInputType(InputType.TYPE_NULL);
-        mealThreeTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimeDialog(mealThreeTime);
-            }
-        });
-        mealThreeTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    showTimeDialog(mealThreeTime);
-                }
-            }
-        });
+            amountInputs[i].setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
-        mealFourTime.setInputType(InputType.TYPE_NULL);
-        mealFourTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimeDialog(mealFourTime);
-            }
-        });
-        mealFourTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    showTimeDialog(mealFourTime);
-                }
-            }
-        });
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    // When focus is lost check that the text field has valid values.
 
-        mealFiveTime.setInputType(InputType.TYPE_NULL);
-        mealFiveTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimeDialog(mealFiveTime);
-            }
-        });
-        mealFiveTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    showTimeDialog(mealFiveTime);
+                    if (!hasFocus) {
+                        //Need to update database
+                        int newAmt = Integer.parseInt(amountInputs[finalI].getText().toString());
+                        meals.get(finalI).setAmount(newAmt);
+                        updateMealAmount(meals.get(finalI));
+                    }
                 }
-            }
-        });
-        */
+            });
+        }
+
         LoadMealsFromDatabase();
     }
-    /*
-    public void mealTimeClicked(View view){
-        switch (view.getId()) {
-            case R.id.Meal1_Time_Input:
-                // Do something
-                updateUI("1");
-                break;
-            case R.id.Meal2_Time_Input:
-                // Do something
-                updateUI("2");
-                break;
-            case R.id.Meal3_Time_Input:
-                // Do something
-                break;
-            case R.id.Meal4_Time_Input:
-                // Do something
-                break;
-            case R.id.Meal5_Time_Input:
-                // Do something
-                break;
-        }
-    }
-
-     */
-
-
 
     private void setFoodLevelProgBar(){
         int newProgress = 0;
@@ -226,6 +142,9 @@ public class MainActivity extends Activity{
     private void triggerManualFeed(){
         //Manual Feed Triggered
 
+        String path = "ManualFeedTrigger/";
+        DatabaseReference myRef = database.getReference(path);
+        myRef.setValue(true);
 
         //Meal meal = new Meal(1, 7, 30, true);
         //textView.setText(meal.getTime().toString());
@@ -235,6 +154,12 @@ public class MainActivity extends Activity{
 
 
     private boolean updateMealAmount(Meal meal){
+        int mealNum = meal.getNum();
+
+        String path = "Meals/" + mealNum + "/Amount";
+        DatabaseReference myRef = database.getReference(path);
+        myRef.setValue(meal.getAmount());
+
         return true;
     }
 
@@ -274,9 +199,13 @@ public class MainActivity extends Activity{
         timePickerDialog.show();
     }
 
-
     public void updateUI(String str){
         textView.setText(str);
+    }
+
+    private void LoadFromDatabase(){
+        DatabaseReference myRef = database.getReference("/");
+
     }
 
     private void LoadMealsFromDatabase(){
@@ -297,16 +226,11 @@ public class MainActivity extends Activity{
                     String time = (String) dataSnapshot.child(Integer.toString(i+1)).child("Time").getValue();
                     Meal meal = new Meal(i+1, (int)amount, enabled, time);
                     meals.add(meal);
-                    //updateUI(Integer.toString(i));
 
-                    if(enabled){
-                        switches[i].setChecked(true);
-                    }
-
+                    switches[i].setChecked(enabled);
                     timeInputs[i].setText(time);
+                    amountInputs[i].setText(Long.toString(amount));
                 }
-
-
             }
 
             @Override
