@@ -3,10 +3,7 @@ package com.jgangl.cat_o_matic;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,24 +12,21 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class MainActivity extends Activity{
 
-    String espIP = "192.168.1.198";
-    int espPort = 4210;
-    int espReceivePort = 50000;
-
-    int value = 0;
-
+    //String espIP = "192.168.1.198";
+    //int espPort = 4210;
+    //int espReceivePort = 50000;
     FirebaseDatabase database;
 
     String newTextString;
@@ -40,57 +34,72 @@ public class MainActivity extends Activity{
     Button manualMealButton;
     Switch enableAllMeals;
 
+    Switch[] switches;
+    EditText[] timeInputs;
+    EditText[] amountInputs;
+
+
     ProgressBar foodLevelProgBar;
 
     TextView textView;
 
-
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg){
-            if(msg.what == 0){
-                updateUI();
-            }else{
-                //showError();
-            }
-        }
-    };
-
-    // Specific Time
-    LocalTime newtime = LocalTime.of(7, 20, 45, 0);
-    //System.out.println(time2);
-
-    // Specific Time
-    //LocalTime time3 = LocalTime.parse("12:32:22", DateTimeFormatter.ISO_TIME);
-    //System.out.println(time3);
-
-    //Meal mealOne = new Meal();
-    //Meal mealTwo = new Meal();
-    //Meal mealThree = new Meal();
-    //Meal mealFour = new Meal();
-    //Meal mealFive = new Meal();
+    ArrayList<Meal> meals;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        meals = new ArrayList<Meal>();
+
         database = FirebaseDatabase.getInstance();
 
-        System.out.println(newtime);
-
         textView = findViewById(R.id.test_view);
-        //ReceiveData(espReceivePort);
 
         foodLevelProgBar = findViewById(R.id.foodLevel_ProgressBar);
         manualMealButton = findViewById(R.id.ManualMeal_Button_Input);
         enableAllMeals = findViewById(R.id.AllMeals_Switch_Input);
 
-        final EditText mealOneTime = findViewById(R.id.MealOne_Time_Input);
-        final EditText mealTwoTime = findViewById(R.id.MealTwo_Time_Input);
-        final EditText mealThreeTime = findViewById(R.id.MealThree_Time_Input);
-        final EditText mealFourTime = findViewById(R.id.MealFour_Time_Input);
-        final EditText mealFiveTime = findViewById(R.id.MealFive_Time_Input);
+
+        switches = new Switch[5];
+        for(int i = 0; i < switches.length; i++){
+            String switchName = "Meal"+ (i+1) + "_Switch_Input";
+            int resId = getResources().getIdentifier(switchName, "id", getPackageName());
+            switches[i] = findViewById(resId);
+        }
+
+        timeInputs = new EditText[5];
+        for(int i = 0; i < timeInputs.length; i++){
+            String timeInputName = "Meal"+ (i+1) + "_Time_Input";
+            int resId = getResources().getIdentifier(timeInputName, "id", getPackageName());
+            timeInputs[i] = findViewById(resId);
+
+            timeInputs[i].setInputType(InputType.TYPE_NULL);
+            final int finalI = i;
+
+            timeInputs[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showTimeDialog(timeInputs[finalI]);
+                }
+            });
+
+            timeInputs[i].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        showTimeDialog(timeInputs[finalI]);
+                    }
+                }
+            });
+        }
+
+
+        //final EditText mealOneTime = findViewById(R.id.MealOne_Time_Input);
+        //final EditText mealTwoTime = findViewById(R.id.MealTwo_Time_Input);
+        //final EditText mealThreeTime = findViewById(R.id.MealThree_Time_Input);
+        //final EditText mealFourTime = findViewById(R.id.MealFour_Time_Input);
+        //final EditText mealFiveTime = findViewById(R.id.MealFive_Time_Input);
 
         manualMealButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +108,7 @@ public class MainActivity extends Activity{
             }
         });
 
+        /*
         mealOneTime.setInputType(InputType.TYPE_NULL);
         mealOneTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,9 +188,33 @@ public class MainActivity extends Activity{
                 }
             }
         });
-
-
+        */
+        LoadMealsFromDatabase();
     }
+    /*
+    public void mealTimeClicked(View view){
+        switch (view.getId()) {
+            case R.id.Meal1_Time_Input:
+                // Do something
+                updateUI("1");
+                break;
+            case R.id.Meal2_Time_Input:
+                // Do something
+                updateUI("2");
+                break;
+            case R.id.Meal3_Time_Input:
+                // Do something
+                break;
+            case R.id.Meal4_Time_Input:
+                // Do something
+                break;
+            case R.id.Meal5_Time_Input:
+                // Do something
+                break;
+        }
+    }
+
+     */
 
 
 
@@ -191,20 +225,33 @@ public class MainActivity extends Activity{
 
     private void triggerManualFeed(){
         //Manual Feed Triggered
-        //sendTestRequest();
 
-        //String data = "01|01|1200|10|1";
-        //String data = "02|099";
-        //String data = "03|1";
-        //String data = "04|1";
 
-        DatabaseReference myRef = database.getReference("Meals/Meal1/Amount");
-        myRef.setValue(5);
-        textView.setText("");
+        //Meal meal = new Meal(1, 7, 30, true);
+        //textView.setText(meal.getTime().toString());
+        //updateDatabase("Meals/Meal1/Amount", 5);
+    }
 
-        //SendData(data, espPort, espIP);
 
-        //UDPSocket sock = new UDPSocket(espIP, espPort);
+
+    private boolean updateMealAmount(Meal meal){
+        return true;
+    }
+
+    private boolean updateMealEnabled(Meal meal){
+        return true;
+    }
+
+    private boolean updateMealTime(Meal meal){
+
+        LocalTime time = meal.getTime();
+        int mealNum = meal.getNum();
+
+        String path = "Meals/" + mealNum + "/Time";
+        DatabaseReference myRef = database.getReference(path);
+        myRef.setValue(meal.getTime().toString());
+
+        return true;
     }
 
     private void showTimeDialog(final EditText editTextToSet){
@@ -226,174 +273,50 @@ public class MainActivity extends Activity{
                 }, mHour, mMinute, false);
         timePickerDialog.show();
     }
-/*
-    private void sendTestRequest(){
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://192.168.1.198/";
 
-// Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        foodLevelProgBar.setProgress(75);
-                        Log.println(Log.DEBUG,"NONE","Worked!!");
-                        // Display the first 500 characters of the response string.
-                        //textView.setText("Response is: "+ response.substring(0,500));
+
+    public void updateUI(String str){
+        textView.setText(str);
+    }
+
+    private void LoadMealsFromDatabase(){
+        String path = "Meals/";
+        DatabaseReference myRef = database.getReference(path);
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int count = (int)dataSnapshot.getChildrenCount();
+
+                long val = (long)dataSnapshot.child("5").child("Amount").getValue();
+
+                //updateUI(Long.toString(val));
+                for(int i = 0; i < dataSnapshot.getChildrenCount(); i++){
+                    long amount = (long) dataSnapshot.child(Integer.toString(i+1)).child("Amount").getValue();
+                    boolean enabled = (boolean) dataSnapshot.child(Integer.toString(i+1)).child("Enabled").getValue();
+                    String time = (String) dataSnapshot.child(Integer.toString(i+1)).child("Time").getValue();
+                    Meal meal = new Meal(i+1, (int)amount, enabled, time);
+                    meals.add(meal);
+                    //updateUI(Integer.toString(i));
+
+                    if(enabled){
+                        switches[i].setChecked(true);
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                foodLevelProgBar.setProgress(25);
 
-                Log.println(Log.DEBUG,"NONE",error.getMessage());
-                //.setText("That didn't work!");
-            }
-        }) {
-            @Override
-            protected Map<String,String> getParams(){
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("Param1","This Is Param1");
-                params.put("Param2","This Is Param2");
-                return params;
-        }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("Content-Type","application/x-www-form-urlencoded");
-                return params;
-            }
-        };
-
-// Add the request to the RequestQueue.
-        queue.add(stringRequest);
-    }
-*/
-
-
-
-    private DatagramSocket UDPSocket;
-    private InetAddress address;
-
-    //  Initializes a socket with the parameters retrieved in the graphical interface for sending data
-    public void Initialize(InetAddress address) {
-        try {
-            this.UDPSocket = new DatagramSocket();
-            this.address = address;
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //  Send the data in the socket defined by the InitReseau method
-    public void SendInstruction(final byte[] data, final int port) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-
-                    DatagramPacket packet = new DatagramPacket(data, data.length, address, port);
-                    UDPSocket.send(packet);
-
-                    final int taille = 1024;
-                    final byte[] buffer = new byte[taille];
-
-                    DatagramPacket packetreponse = new DatagramPacket(buffer, buffer.length);
-
-                    UDPSocket.receive(packetreponse); //Seems to error here
-                    OnReceiveData(packetreponse);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    timeInputs[i].setText(time);
                 }
 
-            }
-        }.start();
-    }
 
-    //  Sending X times the data
-    public void SendData(final String Sdata , final int port, final String address) {
-        new Thread() {
+            }
+
             @Override
-            public void run() {
-                try {
-                    Initialize(InetAddress.getByName(address));
-
-                    byte[] data = Sdata.getBytes();
-                    SendInstruction(data, port);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            public void onCancelled(DatabaseError databaseError) {
+                // ...
             }
-        }.start();
+        });
 
+        //myRef.setValue(5);
+        //myRef.
     }
-
-    public void OnReceiveData(DatagramPacket packet){
-        String str = new String(packet.getData());
-
-        newTextString = str;
-
-        handler.sendEmptyMessage(0);
-
-        Log.d("THREAD", str);
-
-    }
-
-    public void ChangeValue(){
-        value = 5;
-    }
-
-    public void updateUI(){
-        textView.setText(newTextString);
-    }
-
-
-/*
-    //  scan the port set
-    public void ReceiveData(final int portNum) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-
-                    final int taille = 1024;
-                    final byte[] buffer = new byte[taille];
-                    DatagramSocket socketReceive = new DatagramSocket(portNum);
-                    while (true) {
-
-                        textView.setText("Recieving");
-
-
-                        DatagramPacket data = new DatagramPacket(buffer, buffer.length);
-                        socketReceive.receive(data);
-                        DisplayData(data);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-    }
-*/
-
-
-/*
-    // Modifies the display according to the tram received
-    public void DisplayData(DatagramPacket data) {
-        textView.setText("Hello");
-
-        if(data.getLength() != 0){
-            textView.setText(new String(data.getData()));
-            textView.invalidate();
-            textView.requestLayout();
-        }
-
-        //data.getData().toString()
-        //System.out.println(data);
-    }
-*/
 
 }

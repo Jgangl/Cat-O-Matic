@@ -27,7 +27,7 @@
         app:layout_constraintVertical_bias="0.060000002">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/MealOne"
+            android:id="@+id/Meal1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -37,9 +37,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/MealOne_Switch_Input"
+                app:layout_constraintEnd_toStartOf="@+id/Meal1_Switch_Input"
                 app:layout_constraintHorizontal_bias="0.09"
-                app:layout_constraintStart_toEndOf="@+id/MealOne_Label"
+                app:layout_constraintStart_toEndOf="@+id/Meal1_Label"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
@@ -48,7 +48,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealOne_TimeLabel"
+                        android:id="@+id/Meal1_TimeLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -57,11 +57,11 @@
                         android:textSize="18sp" />
 
                     <EditText
-                        android:id="@+id/MealOne_Time_Input"
+                        android:id="@+id/Meal1_Time_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:hint="8:00 AM"
+                        android:hint="8:00"
                         android:inputType="time" />
 
                 </LinearLayout>
@@ -72,7 +72,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealOne_AmountLabel"
+                        android:id="@+id/Meal1_AmountLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -80,7 +80,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/MealOne_Amount_Input"
+                        android:id="@+id/Meal1_Amount_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:text="13"
@@ -91,7 +91,7 @@
             </LinearLayout>
 
             <Switch
-                android:id="@+id/MealOne_Switch_Input"
+                android:id="@+id/Meal1_Switch_Input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="48dp"
@@ -102,7 +102,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/MealOne_Label"
+                android:id="@+id/Meal1_Label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -124,7 +124,7 @@
             android:background="?android:attr/listDivider" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/MealTwo"
+            android:id="@+id/Meal2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -134,9 +134,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/MealTwo_Switch_Input"
+                app:layout_constraintEnd_toStartOf="@+id/Meal2_Switch_Input"
                 app:layout_constraintHorizontal_bias="0.09"
-                app:layout_constraintStart_toEndOf="@+id/MealTwo_Label"
+                app:layout_constraintStart_toEndOf="@+id/Meal2_Label"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
@@ -145,7 +145,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealTwo_TimeLabel"
+                        android:id="@+id/Meal2_TimeLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -153,11 +153,11 @@
                         android:textSize="18sp" />
 
                     <EditText
-                        android:id="@+id/MealTwo_Time_Input"
+                        android:id="@+id/Meal2_Time_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:hint="8:00 AM"
+                        android:hint="8:00"
                         android:inputType="time" />
 
                 </LinearLayout>
@@ -168,7 +168,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealTwo_AmountLabel"
+                        android:id="@+id/Meal2_AmountLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -176,7 +176,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/MealTwo_Amount_Input"
+                        android:id="@+id/Meal2_Amount_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:text="13"
@@ -187,7 +187,7 @@
             </LinearLayout>
 
             <Switch
-                android:id="@+id/MealTwo_Switch_Input"
+                android:id="@+id/Meal2_Switch_Input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="48dp"
@@ -198,7 +198,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/MealTwo_Label"
+                android:id="@+id/Meal2_Label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -220,7 +220,7 @@
             android:background="?android:attr/listDivider" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/MealThree"
+            android:id="@+id/Meal3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -230,9 +230,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/MealThree_Switch_Input"
+                app:layout_constraintEnd_toStartOf="@+id/Meal3_Switch_Input"
                 app:layout_constraintHorizontal_bias="0.09"
-                app:layout_constraintStart_toEndOf="@+id/MealThree_Label"
+                app:layout_constraintStart_toEndOf="@+id/Meal3_Label"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
@@ -241,7 +241,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealThree_TimeLabel"
+                        android:id="@+id/Meal3_TimeLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -249,11 +249,11 @@
                         android:textSize="18sp" />
 
                     <EditText
-                        android:id="@+id/MealThree_Time_Input"
+                        android:id="@+id/Meal3_Time_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:hint="8:00 AM"
+                        android:hint="8:00"
                         android:inputType="time" />
 
                 </LinearLayout>
@@ -264,7 +264,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealThree_AmountLabel"
+                        android:id="@+id/Meal3_AmountLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -272,7 +272,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/MealThree_Amount_Input"
+                        android:id="@+id/Meal3_Amount_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:text="13"
@@ -283,7 +283,7 @@
             </LinearLayout>
 
             <Switch
-                android:id="@+id/MealThree_Switch_Input"
+                android:id="@+id/Meal3_Switch_Input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="48dp"
@@ -294,7 +294,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/MealThree_Label"
+                android:id="@+id/Meal3_Label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -316,7 +316,7 @@
             android:background="?android:attr/listDivider" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/MealFour"
+            android:id="@+id/Meal4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -326,9 +326,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/MealFour_Switch_Input"
+                app:layout_constraintEnd_toStartOf="@+id/Meal4_Switch_Input"
                 app:layout_constraintHorizontal_bias="0.09"
-                app:layout_constraintStart_toEndOf="@+id/MealFour_Label"
+                app:layout_constraintStart_toEndOf="@+id/Meal4_Label"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
@@ -337,7 +337,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealFour_TimeLabel"
+                        android:id="@+id/Meal4_TimeLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -345,11 +345,11 @@
                         android:textSize="18sp" />
 
                     <EditText
-                        android:id="@+id/MealFour_Time_Input"
+                        android:id="@+id/Meal4_Time_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:hint="8:00 AM"
+                        android:hint="8:00"
                         android:inputType="time" />
 
                 </LinearLayout>
@@ -360,7 +360,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealFour_AmountLabel"
+                        android:id="@+id/Meal4_AmountLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -368,7 +368,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/MealFour_Amount_Input"
+                        android:id="@+id/Meal4_Amount_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:text="13"
@@ -379,7 +379,7 @@
             </LinearLayout>
 
             <Switch
-                android:id="@+id/MealFour_Switch_Input"
+                android:id="@+id/Meal4_Switch_Input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="48dp"
@@ -390,7 +390,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/MealFour_Label"
+                android:id="@+id/Meal4_Label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -412,7 +412,7 @@
             android:background="?android:attr/listDivider" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/MealFive"
+            android:id="@+id/Meal5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -422,9 +422,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/MealFive_Switch_Input"
+                app:layout_constraintEnd_toStartOf="@+id/Meal5_Switch_Input"
                 app:layout_constraintHorizontal_bias="0.09"
-                app:layout_constraintStart_toEndOf="@+id/MealFive_Label"
+                app:layout_constraintStart_toEndOf="@+id/Meal5_Label"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
@@ -433,7 +433,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealFive_TimeLabel"
+                        android:id="@+id/Meal5_TimeLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -441,11 +441,11 @@
                         android:textSize="18sp" />
 
                     <EditText
-                        android:id="@+id/MealFive_Time_Input"
+                        android:id="@+id/Meal5_Time_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:hint="8:00 AM"
+                        android:hint="8:00"
                         android:inputType="time" />
 
                 </LinearLayout>
@@ -456,7 +456,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/MealFive_AmountLabel"
+                        android:id="@+id/Meal5_AmountLabel"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="48dp"
@@ -464,7 +464,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/MealFive_Amount_Input"
+                        android:id="@+id/Meal5_Amount_Input"
                         android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:text="13"
@@ -475,7 +475,7 @@
             </LinearLayout>
 
             <Switch
-                android:id="@+id/MealFive_Switch_Input"
+                android:id="@+id/Meal5_Switch_Input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="48dp"
@@ -486,7 +486,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/MealFive_Label"
+                android:id="@+id/Meal5_Label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
