@@ -3,13 +3,13 @@ package com.jgangl.cat_o_matic;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Switch;
@@ -40,6 +40,8 @@ public class MainActivity extends Activity{
 
     TextView textView;
 
+    //TODO: Add functionality for DisabledAllMeals Switch
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +57,6 @@ public class MainActivity extends Activity{
         manualMealButton = findViewById(R.id.ManualMeal_Button_Input);
         enableAllMeals = findViewById(R.id.AllMeals_Switch_Input);
 
-
         manualMealButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,26 +64,52 @@ public class MainActivity extends Activity{
             }
         });
 
+        LoadMealsFromDatabase();
+
         switches = new Switch[5];
+        timeInputs = new EditText[5];
+        amountInputs = new EditText[5];
+
+        CreateFoodLevelCallback();
+
+        //updateUIWithMeals();
+    }
+
+    private void InitializeSwitches(){
         for(int i = 0; i < switches.length; i++){
             String switchName = "Meal"+ (i+1) + "_Switch_Input";
             int resId = getResources().getIdentifier(switchName, "id", getPackageName());
             switches[i] = findViewById(resId);
-        }
+            Log.d("IVAL", Integer.toString(meals.size()));
+            meals.get(i).setEnableSwitch(switches[i]);
 
-        timeInputs = new EditText[5];
+            final int finalI = i;
+            switches[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    meals.get(finalI).setEnabled(isChecked);
+
+                    updateMealEnabled(meals.get(finalI));
+                }
+            });
+        }
+    }
+
+    private void InitializeTimeEditTexts(){
         for(int i = 0; i < timeInputs.length; i++){
             String timeInputName = "Meal"+ (i+1) + "_Time_Input";
             int resId = getResources().getIdentifier(timeInputName, "id", getPackageName());
             timeInputs[i] = findViewById(resId);
 
             timeInputs[i].setInputType(InputType.TYPE_NULL);
+
+            meals.get(i).setTimeInput(timeInputs[i]);
+
             final int finalI = i;
 
             timeInputs[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showTimeDialog(timeInputs[finalI]);
+                    showTimeDialog(meals.get(finalI));
                 }
             });
 
@@ -90,17 +117,20 @@ public class MainActivity extends Activity{
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (hasFocus) {
-                        showTimeDialog(timeInputs[finalI]);
+                        showTimeDialog(meals.get(finalI));
                     }
                 }
             });
         }
+    }
 
-        amountInputs = new EditText[5];
+    private void InitializeAmountEditTexts(){
         for(int i = 0; i < amountInputs.length; i++){
             String amountInputName = "Meal"+ (i+1) + "_Amount_Input";
             int resId = getResources().getIdentifier(amountInputName, "id", getPackageName());
             amountInputs[i] = findViewById(resId);
+
+            meals.get(i).setAmountInput(amountInputs[i]);
 
             final int finalI = i;
 
@@ -130,12 +160,12 @@ public class MainActivity extends Activity{
                 }
             });
         }
-
-        LoadMealsFromDatabase();
     }
 
-    private void setFoodLevelProgBar(){
-        int newProgress = 0;
+    private void setFoodLevelProgBar(int newProgress){
+        if(newProgress > 100) {newProgress = 100;}
+        if(newProgress < 0) {newProgress = 0;}
+
         foodLevelProgBar.setProgress(newProgress);
     }
 
@@ -151,6 +181,12 @@ public class MainActivity extends Activity{
         //updateDatabase("Meals/Meal1/Amount", 5);
     }
 
+    private void DisableAllMeals(){
+        String path = "DisableAllMeals/";
+        DatabaseReference myRef = database.getReference(path);
+        myRef.setValue(true);
+    }
+
 
 
     private boolean updateMealAmount(Meal meal){
@@ -164,11 +200,16 @@ public class MainActivity extends Activity{
     }
 
     private boolean updateMealEnabled(Meal meal){
+        int mealNum = meal.getNum();
+
+        String path = "Meals/" + mealNum + "/Enabled";
+        DatabaseReference myRef = database.getReference(path);
+        myRef.setValue(meal.getEnabled());
+
         return true;
     }
 
     private boolean updateMealTime(Meal meal){
-
         LocalTime time = meal.getTime();
         int mealNum = meal.getNum();
 
@@ -179,7 +220,15 @@ public class MainActivity extends Activity{
         return true;
     }
 
-    private void showTimeDialog(final EditText editTextToSet){
+    private boolean updateMealTime(int mealNum, String time){
+        String path = "Meals/" + mealNum + "/Time";
+        DatabaseReference myRef = database.getReference(path);
+        myRef.setValue(time);
+
+        return true;
+    }
+
+    private void showTimeDialog(final Meal meal){
         // Get Current Time
         final Calendar c = Calendar.getInstance();
         int mHour = c.get(Calendar.HOUR_OF_DAY);
@@ -192,8 +241,9 @@ public class MainActivity extends Activity{
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
-
-                        editTextToSet.setText(hourOfDay + ":" + minute);
+                        String newTime = hourOfDay + ":" + minute;
+                        meal.getTimeInput().setText(newTime);
+                        updateMealTime(meal);
                     }
                 }, mHour, mMinute, false);
         timePickerDialog.show();
@@ -208,10 +258,33 @@ public class MainActivity extends Activity{
 
     }
 
+    private void CreateFoodLevelCallback(){
+        DatabaseReference myRef = database.getReference("/FoodLevelPerc");
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                //Post post = dataSnapshot.getValue(Post.class);
+
+                long foodLevelPercent = (long) dataSnapshot.getValue();
+                updateUI(Long.toString(foodLevelPercent));
+                setFoodLevelProgBar((int)foodLevelPercent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        myRef.addValueEventListener(postListener);
+    }
+
     private void LoadMealsFromDatabase(){
         String path = "Meals/";
         DatabaseReference myRef = database.getReference(path);
-
+        Log.d("LOAD","Load meals");
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -226,11 +299,13 @@ public class MainActivity extends Activity{
                     String time = (String) dataSnapshot.child(Integer.toString(i+1)).child("Time").getValue();
                     Meal meal = new Meal(i+1, (int)amount, enabled, time);
                     meals.add(meal);
-
-                    switches[i].setChecked(enabled);
-                    timeInputs[i].setText(time);
-                    amountInputs[i].setText(Long.toString(amount));
+                    Log.d("MEALADD", "Added Meal");
                 }
+
+                InitializeSwitches();
+                InitializeTimeEditTexts();
+                InitializeAmountEditTexts();
+                updateUIWithMeals();
             }
 
             @Override
@@ -241,6 +316,20 @@ public class MainActivity extends Activity{
 
         //myRef.setValue(5);
         //myRef.
+    }
+
+    private void updateUIWithMeals(){
+        for(int i = 0; i < meals.size(); i++){
+            Meal meal = meals.get(i);
+
+            int amount = meal.getAmount();
+            boolean enabled = meal.getEnabled();
+            String time = meal.getTime().toString();
+
+            switches[i].setChecked(enabled);
+            timeInputs[i].setText(time);
+            amountInputs[i].setText(Integer.toString(amount));
+        }
     }
 
 }

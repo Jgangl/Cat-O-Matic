@@ -1,5 +1,6 @@
 package com.jgangl.cat_o_matic;
 
+import android.widget.EditText;
 import android.widget.Switch;
 
 import java.time.LocalTime;
@@ -13,6 +14,8 @@ public class Meal {
     private int amount;
 
     private Switch enableSwitch;
+    private EditText timeInput;
+    private EditText amountInput;
 
     Meal(){
         this.time = LocalTime.of(8, 0);
@@ -99,5 +102,29 @@ public class Meal {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public EditText getTimeInput() {
+        return timeInput;
+    }
+
+    public void setTimeInput(EditText timeInput) {
+        this.timeInput = timeInput;
+    }
+
+    public EditText getAmountInput() {
+        return amountInput;
+    }
+
+    public void setAmountInput(EditText amountInput) {
+        this.amountInput = amountInput;
+    }
+
+    public boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
