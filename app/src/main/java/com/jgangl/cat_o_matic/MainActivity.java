@@ -210,11 +210,13 @@ public class MainActivity extends Activity{
     }
 
     private boolean updateMealTime(Meal meal){
+        //updateUI("UPDATING MEAL");
         LocalTime time = meal.getTime();
         int mealNum = meal.getNum();
 
         String path = "Meals/" + mealNum + "/Time";
         DatabaseReference myRef = database.getReference(path);
+        //updateUI(meal.getTime().toString());
         myRef.setValue(meal.getTime().toString());
 
         return true;
@@ -242,7 +244,9 @@ public class MainActivity extends Activity{
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
                         String newTime = hourOfDay + ":" + minute;
+                        updateUI(newTime);
                         meal.getTimeInput().setText(newTime);
+                        meal.setTime(hourOfDay, minute);
                         updateMealTime(meal);
                     }
                 }, mHour, mMinute, false);
