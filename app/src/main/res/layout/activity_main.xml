@@ -521,6 +521,8 @@
         android:layout_marginBottom="48dp"
         android:scaleX="2"
         android:scaleY="2"
+        android:textColorHighlight="#C33636"
+        android:textColorLink="#B85454"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

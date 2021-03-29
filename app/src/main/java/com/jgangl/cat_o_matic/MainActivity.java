@@ -35,12 +35,15 @@ public class MainActivity extends Activity{
     EditText[] amountInputs;
 
     Button manualMealButton;
-    Switch enableAllMeals;
+    Switch disableAllMeals_switch;
     ProgressBar foodLevelProgBar;
 
     TextView textView;
 
-    //TODO: Add functionality for DisabledAllMeals Switch
+    int foodLevelPercent = 0;
+    boolean disableAllMeals;
+
+    //TODO: Load DisableAllMeals on startup
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +58,7 @@ public class MainActivity extends Activity{
 
         foodLevelProgBar = findViewById(R.id.foodLevel_ProgressBar);
         manualMealButton = findViewById(R.id.ManualMeal_Button_Input);
-        enableAllMeals = findViewById(R.id.AllMeals_Switch_Input);
+        disableAllMeals_switch = findViewById(R.id.AllMeals_Switch_Input);
 
         manualMealButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,15 +67,19 @@ public class MainActivity extends Activity{
             }
         });
 
-        LoadMealsFromDatabase();
+        LoadDataFromDatabase();
 
         switches = new Switch[5];
         timeInputs = new EditText[5];
         amountInputs = new EditText[5];
 
-        CreateFoodLevelCallback();
+        disableAllMeals_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                UpdateAllMealsEnable(isChecked);
+            }
+        });
 
-        //updateUIWithMeals();
+        CreateFoodLevelCallback();
     }
 
     private void InitializeSwitches(){
@@ -171,23 +178,16 @@ public class MainActivity extends Activity{
 
     private void triggerManualFeed(){
         //Manual Feed Triggered
-
         String path = "ManualFeedTrigger/";
         DatabaseReference myRef = database.getReference(path);
         myRef.setValue(true);
-
-        //Meal meal = new Meal(1, 7, 30, true);
-        //textView.setText(meal.getTime().toString());
-        //updateDatabase("Meals/Meal1/Amount", 5);
     }
 
-    private void DisableAllMeals(){
+    private void UpdateAllMealsEnable(boolean val){
         String path = "DisableAllMeals/";
         DatabaseReference myRef = database.getReference(path);
-        myRef.setValue(true);
+        myRef.setValue(val);
     }
-
-
 
     private boolean updateMealAmount(Meal meal){
         int mealNum = meal.getNum();
@@ -244,7 +244,7 @@ public class MainActivity extends Activity{
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
                         String newTime = hourOfDay + ":" + minute;
-                        updateUI(newTime);
+                        updateDebugText(newTime);
                         meal.getTimeInput().setText(newTime);
                         meal.setTime(hourOfDay, minute);
                         updateMealTime(meal);
@@ -253,13 +253,8 @@ public class MainActivity extends Activity{
         timePickerDialog.show();
     }
 
-    public void updateUI(String str){
+    public void updateDebugText(String str){
         textView.setText(str);
-    }
-
-    private void LoadFromDatabase(){
-        DatabaseReference myRef = database.getReference("/");
-
     }
 
     private void CreateFoodLevelCallback(){
@@ -271,9 +266,9 @@ public class MainActivity extends Activity{
                 // Get Post object and use the values to update the UI
                 //Post post = dataSnapshot.getValue(Post.class);
 
-                long foodLevelPercent = (long) dataSnapshot.getValue();
-                updateUI(Long.toString(foodLevelPercent));
-                setFoodLevelProgBar((int)foodLevelPercent);
+                long tempFoodLevelPercent = (long) dataSnapshot.getValue();
+                foodLevelPercent = (int)tempFoodLevelPercent;
+                updateUI();
             }
 
             @Override
@@ -285,7 +280,7 @@ public class MainActivity extends Activity{
         myRef.addValueEventListener(postListener);
     }
 
-    private void LoadMealsFromDatabase(){
+    private void LoadDataFromDatabase(){
         String path = "Meals/";
         DatabaseReference myRef = database.getReference(path);
         Log.d("LOAD","Load meals");
@@ -309,7 +304,7 @@ public class MainActivity extends Activity{
                 InitializeSwitches();
                 InitializeTimeEditTexts();
                 InitializeAmountEditTexts();
-                updateUIWithMeals();
+                updateUI();
             }
 
             @Override
@@ -318,11 +313,40 @@ public class MainActivity extends Activity{
             }
         });
 
-        //myRef.setValue(5);
-        //myRef.
+        myRef = database.getReference("DisableAllMeals/");
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                disableAllMeals = (boolean)dataSnapshot.getValue();
+                updateUI();
+                //UpdateUI for allmeals switch
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // ...
+            }
+        });
+
+        myRef = database.getReference("FoodLevelPerc/");
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long tempFoodLevel = (long)dataSnapshot.getValue();
+                foodLevelPercent = (int)tempFoodLevel;
+                updateUI();
+                //UpdateUI for food Level Percent progress bar
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // ...
+            }
+        });
     }
 
-    private void updateUIWithMeals(){
+    private void updateUI(){
+        //Update Meals
         for(int i = 0; i < meals.size(); i++){
             Meal meal = meals.get(i);
 
@@ -334,6 +358,12 @@ public class MainActivity extends Activity{
             timeInputs[i].setText(time);
             amountInputs[i].setText(Integer.toString(amount));
         }
+
+        //Update DisableAllMeals switch
+        disableAllMeals_switch.setChecked(disableAllMeals);
+
+        //Update FoodLevel Bar
+        foodLevelProgBar.setProgress(foodLevelPercent);
     }
 
 }
