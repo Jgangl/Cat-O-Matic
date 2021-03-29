@@ -5,7 +5,6 @@
 #include <FirebaseESP8266.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
-#include <TimeLib.h>
 //#include <HCSR04.h>
 //#include <RunningMedian.h>
 
@@ -383,31 +382,31 @@ void streamTimeoutCallback(bool timeout)
 void getNextMeal(){
   //UpdateCurrentTime();
 
-  int currentHour = 1;
+  int currentHour = 23;
   int currentMinute = 30;
 
-  Serial.printf("FAKE TIME ---  Hour: %d  Minute: %d\n\n", currHour, currMinute);
+  Serial.printf("FAKE TIME ---  Hour: %d  Minute: %d\n\n", currentHour, currentMinute);
 
   int numMeals = sizeof(meals) / sizeof(Meal);
   for(int i = 0; i < numMeals; i++){
     //Check if current time is before first meal
-    if(i == 0 && (currentHour < sortedMeals[i].time.hour && currentMinute < sortedMeals[i].time.minute)){
+    if(i == 0 && (currentHour < sortedMeals[i].time.hour || (currentHour < sortedMeals[i].time.hour && currentMinute < sortedMeals[i].time.minute))){
       nextMeal = sortedMeals[0];
-      Serial.println("Next Meal Set");
+      Serial.println("Next Meal Set 1");
     }
 
     //Check if current time is after last meal
-    if(i == numMeals-1 && (currentHour > sortedMeals[i].time.hour && currentMinute > sortedMeals[i].time.minute)){
+    if(i == numMeals-1 && (currentHour > sortedMeals[i].time.hour || (currentHour > sortedMeals[i].time.hour && currentMinute > sortedMeals[i].time.minute))){
       nextMeal = sortedMeals[0];
-      Serial.println("Next Meal Set");
+      Serial.println("Next Meal Set 2");
     }
 
     //Check if current time is between 2 meals
-    if(currentHour > sortedMeals[i].time.hour && currentMinute > sortedMeals[i].time.minute){
-      if(currentHour < sortedMeals[i+1].time.hour && currentMinute < sortedMeals[i+1].time.minute){
+    if(currentHour > sortedMeals[i].time.hour || (currentHour > sortedMeals[i].time.hour && currentMinute > sortedMeals[i].time.minute)){
+      if(currentHour < sortedMeals[i+1].time.hour || (currentHour < sortedMeals[i+1].time.hour && currentMinute < sortedMeals[i+1].time.minute)){
         //Between indeces
         nextMeal = sortedMeals[i+1];
-        Serial.println("Next Meal Set");
+        Serial.println("Next Meal Set 3s");
       }
     }
   }

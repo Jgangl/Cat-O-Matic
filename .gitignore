@@ -13,8 +13,8 @@
 .externalNativeBuild
 .cxx
 
-/ESP_Code/.pio
-/ESP_Code/.vscode
-/ESP_Code/test
-/ESP_Code/include/README
-/ESP_Code/lib/README
+/ESP_Code/Cat-O-Matic/.pio
+/ESP_Code/Cat-O-Matic/.vscode
+/ESP_Code/Cat-O-Matic/test
+/ESP_Code/Cat-O-Matic/include/README
+/ESP_Code/Cat-O-Matic/lib/README
