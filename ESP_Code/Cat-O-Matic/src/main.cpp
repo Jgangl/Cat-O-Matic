@@ -328,23 +328,26 @@ void UpdateCurrentTime(){
 }
 
 void ProcessMealTimes(){
-  int currHour = timeClient.getHours();
-  int currMin = timeClient.getMinutes();
+  //Need to check if current time is equal to next meals time
+  UpdateCurrentTime();
   
-  int numMeals = sizeof(meals) / sizeof(Meal);
 
-  for(int i = 0; i < numMeals; i++){
-    if(meals[i].enabled){
-      if((meals[i].time.hour == currHour)  &&  (meals[i].time.minute == currMin)){
-        if(!meals[i].feeding){//Check if meal was already done
-          meals[i].feeding = true;
-
-          //StartFeeding(meals[i].amount);
-        }
-      }
+  if(currHour == nextMeal.time.hour && currMinute == nextMeal.time.minute){
+    if(!isFeeding){
+      isFeeding = true;
+      //Start feeding motor
     }
   }
   
+}
+
+void ProcessFeeding(){
+  if(isFeeding){
+    //Check portion click
+    //Count number of portion switch clicks
+    //if # of clicks is > than # of portions
+      //Stop feeding
+  }
 }
 
 void ManualFeedTriggered(){
@@ -354,7 +357,6 @@ void ManualFeedTriggered(){
 
   Serial.printf("----TIME UPDATE----\n\n");
   Serial.printf("Hour: %d Minute: %d Second: %d\n\n", hour, minute, second);
-
 }
 
 void startFeedingMotor(){
