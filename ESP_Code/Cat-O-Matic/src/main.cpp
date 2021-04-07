@@ -55,7 +55,7 @@ struct Meal{
   }
 };
 
-
+void ConnectToWifi();
 void ManualFeed(char amount);
 void streamCallback(StreamData data);
 void streamTimeoutCallback(bool timeout);
@@ -66,6 +66,7 @@ void SortMeals();
 void PrintSortedMeals();
 void ManualFeedTriggered();
 void getNextMeal();
+void runPortionSwitchCheck();
 
 const char* ssid = "99th Precinct";
 const char* password = "You'reNotCheddar";
@@ -86,9 +87,15 @@ short echoPin = 13;
 short enA = 4;  //D2
 short in1 = 0;  //D3
 short in2 = 2;  //D4
+short portionSwitch = 5; //D1
 
 int currHour = 0;
 int currMinute = 0;
+
+int buttonState;
+int lastButtonState = HIGH;
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 0;
 
 short numPtnSwPresses = 0;
 bool isFeeding = false;
@@ -117,18 +124,11 @@ void setup()
   pinMode(enA, OUTPUT);
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
+  pinMode(portionSwitch, INPUT_PULLUP);
 
   Serial.begin(921600);
   Serial.println();
-  
-  Serial.printf("Connecting to %s ", ssid);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println(" connected");
+  ConnectToWifi();
 
   timeClient.begin();
 
@@ -139,23 +139,56 @@ void setup()
 
   timeClient.update();
   getNextMeal();
-  Serial.printf("\nNext Meal   Hour: %d  Minute: %d\n\n", nextMeal.time.hour, nextMeal.time.minute);
-
+  //Serial.printf("\nNext Meal   Hour: %d  Minute: %d\n\n", nextMeal.time.hour, nextMeal.time.minute);
+  
   //setSyncProvider(getNtpTime);
 }
-bool timer = 0;
 
 void loop()
 {
   timeClient.update();
-  //timeClient.getEpochTime();
-  //ProcessMealTimes();
+  timeClient.getEpochTime();
+  ProcessMealTimes();
 
   currentMillis = millis();
   if(currentMillis - previousMillis > MEAL_CHECK_REFRESH){
     previousMillis = currentMillis;
     //ProcessMealTimes();
   }
+
+  runPortionSwitchCheck();
+}
+
+void runPortionSwitchCheck(){
+  int swReading = digitalRead(portionSwitch);
+
+  // check to see if you just pressed the button
+  // (i.e. the input went from LOW to HIGH), and you've waited long enough
+  // since the last press to ignore any noise:
+
+  // If the switch changed, due to noise or pressing:
+  if (swReading != lastButtonState) {
+    // reset the debouncing timer
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    // whatever the reading is at, it's been there for longer than the debounce
+    // delay, so take it as the actual current state:
+
+    // if the button state has changed:
+    if (swReading != buttonState) {
+      buttonState = swReading;
+
+      // only toggle the LED if the new button state is HIGH
+      if (buttonState == LOW) {
+        Serial.println("Switched");
+      }
+    }
+  }
+
+  // save the reading. Next time through the loop, it'll be the lastButtonState:
+  lastButtonState = swReading;
 }
 
 void ConfigureFirebase(){
@@ -371,8 +404,6 @@ void stopFeedingMotor(){
   digitalWrite(enA, LOW);
 }
 
-//Global function that notifies when stream connection lost
-//The library will resume the stream connection automatically
 void streamTimeoutCallback(bool timeout)
 {
   if(timeout){
@@ -451,4 +482,15 @@ void PrintSortedMeals(){
   for(int i = 0; i < numMeals; i++){
     Serial.printf("MEAL---Amount: %d  Enabled: %d  Time: %d:%d\n", sortedMeals[i].amount, sortedMeals[i].enabled, sortedMeals[i].time.hour, sortedMeals[i].time.minute);
   }
+}
+
+void ConnectToWifi(){
+  Serial.printf("Connecting to %s ", ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println(" connected");
 }
