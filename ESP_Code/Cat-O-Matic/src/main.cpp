@@ -5,8 +5,8 @@
 #include <FirebaseESP8266.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
-//#include <HCSR04.h>
-//#include <RunningMedian.h>
+#include <HCSR04.h>
+#include <RunningMedian.h>
 
 struct Time{
   short hour;
@@ -67,6 +67,12 @@ void PrintSortedMeals();
 void ManualFeedTriggered();
 void getNextMeal();
 void runPortionSwitchCheck();
+void StartFeeding();
+void startFeedingMotor();
+void ProcessFeeding();
+void ProcessMealTimes();
+void measureDist();
+void getCurrentFoodLevel();
 
 const char* ssid = "99th Precinct";
 const char* password = "You'reNotCheddar";
@@ -97,6 +103,8 @@ int lastButtonState = HIGH;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 0;
 
+unsigned long motorStartTime = 0;
+
 short numPtnSwPresses = 0;
 bool isFeeding = false;
 
@@ -116,8 +124,8 @@ FirebaseAuth auth;
 // Define the FirebaseConfig data for config data
 FirebaseConfig config;
 
-//RunningMedian samples = RunningMedian(15);
-//UltraSonicDistanceSensor distanceSensor(triggerPin, echoPin);
+RunningMedian samples = RunningMedian(15);
+UltraSonicDistanceSensor distanceSensor(triggerPin, echoPin);
 
 void setup()
 {
@@ -128,17 +136,17 @@ void setup()
 
   Serial.begin(921600);
   Serial.println();
-  ConnectToWifi();
+  //ConnectToWifi();
 
   timeClient.begin();
 
-  ConfigureFirebase();
-  LoadDataFromDatabase();
-  resetManualFeedTrigger();
+  //ConfigureFirebase();
+  //LoadDataFromDatabase();
+  //resetManualFeedTrigger();
   //PrintSortedMeals();
 
   timeClient.update();
-  getNextMeal();
+  //getNextMeal();
   //Serial.printf("\nNext Meal   Hour: %d  Minute: %d\n\n", nextMeal.time.hour, nextMeal.time.minute);
   
   //setSyncProvider(getNtpTime);
@@ -148,7 +156,7 @@ void loop()
 {
   timeClient.update();
   timeClient.getEpochTime();
-  ProcessMealTimes();
+  //ProcessMealTimes();
 
   currentMillis = millis();
   if(currentMillis - previousMillis > MEAL_CHECK_REFRESH){
@@ -156,7 +164,9 @@ void loop()
     //ProcessMealTimes();
   }
 
-  runPortionSwitchCheck();
+  //ProcessFeeding();
+
+  //runPortionSwitchCheck();
 }
 
 void runPortionSwitchCheck(){
@@ -182,7 +192,8 @@ void runPortionSwitchCheck(){
 
       // only toggle the LED if the new button state is HIGH
       if (buttonState == LOW) {
-        Serial.println("Switched");
+        numPtnSwPresses++;
+        //Increment portion counter
       }
     }
   }
@@ -367,8 +378,7 @@ void ProcessMealTimes(){
 
   if(currHour == nextMeal.time.hour && currMinute == nextMeal.time.minute){
     if(!isFeeding){
-      isFeeding = true;
-      //Start feeding motor
+      StartFeeding();
     }
   }
   
@@ -376,11 +386,25 @@ void ProcessMealTimes(){
 
 void ProcessFeeding(){
   if(isFeeding){
+    if(numPtnSwPresses >= nextMeal.amount){
+      StopFeeding();
+    }
     //Check portion click
     //Count number of portion switch clicks
     //if # of clicks is > than # of portions
       //Stop feeding
   }
+}
+
+void StartFeeding(){
+  isFeeding = true;
+  startFeedingMotor();
+}
+
+void StopFeeding(){
+  isFeeding = false;
+  stopFeedingMotor();
+  StartMeasuringFoodLevel();
 }
 
 void ManualFeedTriggered(){
@@ -393,6 +417,9 @@ void ManualFeedTriggered(){
 }
 
 void startFeedingMotor(){
+  motorStartTime = millis();
+
+  //Write to motor pins
   digitalWrite(in1, LOW);
   digitalWrite(in2, HIGH);
   analogWrite(enA, 512);
@@ -483,6 +510,39 @@ void PrintSortedMeals(){
     Serial.printf("MEAL---Amount: %d  Enabled: %d  Time: %d:%d\n", sortedMeals[i].amount, sortedMeals[i].enabled, sortedMeals[i].time.hour, sortedMeals[i].time.minute);
   }
 }
+
+void StartMeasuringFoodLevel(){
+
+}
+
+void measureDist(){
+  double dist = distanceSensor.measureDistanceCm();
+
+  if(dist > 1 && dist < 30){
+    //Serial.println(dist);
+    samples.add(dist);
+  }
+}
+
+void getCurrentFoodLevel(){
+  float dist = samples.getMedian();
+
+  int maxFoodLevel = 2;  //cm
+  int minFoodLevel = 25; //cm
+
+  float foodLevelPerc = (dist - maxFoodLevel) / (minFoodLevel - maxFoodLevel);
+  if(foodLevelPerc > 100){
+    foodLevelPerc = 100;
+  }
+  else if(foodLevelPerc < 0){
+    foodLevelPerc = 0;
+  }
+
+  Serial.println(dist);
+}
+
+
+
 
 void ConnectToWifi(){
   Serial.printf("Connecting to %s ", ssid);
