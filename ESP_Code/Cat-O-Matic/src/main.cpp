@@ -88,12 +88,12 @@ Meal sortedMeals[5];
 bool disableAllMeals = false;
 Meal nextMeal;
 
-short triggerPin = 12;
-short echoPin = 13;
-short enA = 4;  //D2
-short in1 = 0;  //D3
-short in2 = 2;  //D4
-short portionSwitch = 5; //D1
+short portionSwitch = 5;  //D1
+short enA = 4;            //D2
+short in1 = 0;            //D3
+short in2 = 2;            //D4
+short triggerPin = 12;    //D6
+short echoPin = 13;       //D7
 
 int currHour = 0;
 int currMinute = 0;
@@ -163,6 +163,9 @@ void loop()
     previousMillis = currentMillis;
     //ProcessMealTimes();
   }
+
+  measureDist();
+  delay(50); 
 
   //ProcessFeeding();
 
@@ -517,6 +520,8 @@ void StartMeasuringFoodLevel(){
 
 void measureDist(){
   double dist = distanceSensor.measureDistanceCm();
+  Serial.println(dist);
+
 
   if(dist > 1 && dist < 30){
     //Serial.println(dist);
