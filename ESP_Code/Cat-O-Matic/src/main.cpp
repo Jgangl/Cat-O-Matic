@@ -74,8 +74,8 @@ void ProcessMealTimes();
 void measureDist();
 void getCurrentFoodLevel();
 
-const char* ssid = "99th Precinct";
-const char* password = "You'reNotCheddar";
+const char* ssid = "";
+const char* password = "";
 
 const long utcOffsetInSeconds = -5 * 60 * 60;
 //char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -112,10 +112,10 @@ unsigned long currentMillis = 0;
 unsigned long previousMillis = 0;
 const unsigned long MEAL_CHECK_REFRESH = 1000;//ms
 
-#define FIREBASE_HOST "cat-o-matic.firebaseio.com"
-#define API_KEY "AIzaSyAEBR1xRGweFzS0vkMo2aX7HSLCLFcXHg4"
-#define USER_EMAIL "joshua.gangl@gmail.com"
-#define USER_PASSWORD "Jpg150034"
+#define FIREBASE_HOST ""
+#define API_KEY ""
+#define USER_EMAIL ""
+#define USER_PASSWORD ""
 
 //Define the Firebase Data object
 FirebaseData fbdo;
@@ -156,7 +156,7 @@ void loop()
 {
   timeClient.update();
   timeClient.getEpochTime();
-  //ProcessMealTimes();
+  ProcessMealTimes();
 
   currentMillis = millis();
   if(currentMillis - previousMillis > MEAL_CHECK_REFRESH){
@@ -167,9 +167,9 @@ void loop()
   measureDist();
   delay(50); 
 
-  //ProcessFeeding();
+  ProcessFeeding();
 
-  //runPortionSwitchCheck();
+  runPortionSwitchCheck();
 }
 
 void runPortionSwitchCheck(){
@@ -443,7 +443,7 @@ void streamTimeoutCallback(bool timeout)
 }
 
 void getNextMeal(){
-  //UpdateCurrentTime();
+  UpdateCurrentTime();
 
   int currentHour = 23;
   int currentMinute = 30;
